@@ -1,26 +1,466 @@
-canvas{
-    border: solid;
-    border-color: white;
-    box-shadow:10px,gray ;
-    margin-top: 150px;
-}
-body{
-    background-size:cover;
+
+:root {
+    --background: #101010;
+    --surface: #191919;
+    --text: #f5f5f5;
+    --muted: #858585;
+    --accent: #d6a85f;
+    --green: #63d69b;
 }
 
-.heading{
-    font-size:23px;
-    width:100%;
-    margin:0px;
-}
-.note{
-    font-size:15px;
-    color:black;
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
-#song{
-   border-radius: 10px;
-   text-align: center;
-   font-size:23px;
-   width: 150px;
+body {
+    min-height: 100vh;
+    background:
+        radial-gradient(circle at 50% 40%, #292929, #151515 50%, #090909);
+    color: var(--text);
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 30px 15px;
+}
+
+/* MAIN PLAYER */
+
+.player {
+    width: 100%;
+    max-width: 520px;
+    min-height: 760px;
+    padding: 35px;
+    background: rgba(25, 25, 25, 0.9);
+    border: 1px solid #333;
+    border-radius: 24px;
+    box-shadow: 0 25px 80px rgba(0, 0, 0, 0.5);
+    text-align: center;
+}
+
+.top-bar h1 {
+    font-size: 30px;
+    letter-spacing: 8px;
+}
+
+.top-bar h1 span {
+    color: var(--accent);
+}
+
+.top-bar p,
+footer p {
+    margin-top: 9px;
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: var(--muted);
+}
+
+/* TURNTABLE */
+
+.turntable {
+    position: relative;
+    width: 100%;
+    height: 340px;
+    margin: 45px auto 25px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.record-area {
+    width: 310px;
+    height: 310px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: grab;
+}
+
+.record-area:active {
+    cursor: grabbing;
+}
+
+.vinyl {
+    position: relative;
+    width: 290px;
+    height: 290px;
+    border-radius: 50%;
+    background:
+        repeating-radial-gradient(
+            circle,
+            #111 0px,
+            #111 2px,
+            #222 3px,
+            #111 4px
+        );
+    border: 7px solid #080808;
+    box-shadow:
+        0 0 0 2px #383838,
+        0 15px 35px rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.vinyl::before {
+    content: "";
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: linear-gradient(
+        135deg,
+        transparent 35%,
+        rgba(255, 255, 255, 0.08) 48%,
+        transparent 60%
+    );
+}
+
+.vinyl-label {
+    position: relative;
+    z-index: 2;
+    width: 95px;
+    height: 95px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: #171717;
+    border: 5px solid #b58a4c;
+    box-shadow: 0 0 0 3px #111;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.vinyl-label span {
+    font-size: 15px;
+    font-weight: bold;
+    letter-spacing: 2px;
+}
+
+.vinyl-label small {
+    margin-top: 4px;
+    font-size: 6px;
+    letter-spacing: 1px;
+}
+
+/* RECORD SPIN */
+
+.vinyl.playing {
+    animation: spin 2.5s linear infinite;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* TONEARM */
+
+.tonearm {
+    position: absolute;
+    top: 20px;
+    right: 5px;
+    width: 115px;
+    height: 9px;
+    background: linear-gradient(#aaa, #555);
+    border-radius: 10px;
+    transform-origin: 100% 50%;
+    transform: rotate(35deg);
+    transition: transform 0.5s ease;
+    z-index: 3;
+}
+
+.tonearm::before {
+    content: "";
+    position: absolute;
+    right: -8px;
+    top: -10px;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: radial-gradient(circle, #aaa, #333);
+    border: 2px solid #666;
+}
+
+.tonearm::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: -5px;
+    width: 15px;
+    height: 19px;
+    background: #777;
+    border-radius: 4px;
+}
+
+.tonearm.playing {
+    transform: rotate(12deg);
+}
+
+/* TRACK INFO */
+
+.track-info {
+    margin-top: 20px;
+}
+
+.eyebrow {
+    color: var(--accent);
+    font-size: 10px;
+    letter-spacing: 4px;
+}
+
+.track-info h2 {
+    margin-top: 12px;
+    font-size: 27px;
+}
+
+.track-info p:last-child {
+    margin-top: 7px;
+    color: var(--muted);
+    font-size: 13px;
+}
+
+/* MUSIC CONTROLS */
+
+.controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 25px;
+    margin-top: 30px;
+}
+
+.controls button {
+    width: 48px;
+    height: 48px;
+    border: 1px solid #444;
+    border-radius: 50%;
+    background: #222;
+    color: white;
+    font-size: 17px;
+    cursor: pointer;
+    transition: 0.25s ease;
+}
+
+.controls button:hover {
+    background: var(--accent);
+    color: #111;
+    transform: scale(1.08);
+}
+
+#playBtn {
+    width: 62px;
+    height: 62px;
+    background: var(--accent);
+    color: #111;
+    border: none;
+    font-size: 21px;
+}
+
+/* VOLUME */
+
+.volume-control {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 30px;
+}
+
+.volume-control span {
+    color: var(--muted);
+    font-size: 10px;
+    letter-spacing: 2px;
+}
+
+#volumeSlider {
+    width: 130px;
+    accent-color: var(--accent);
+    cursor: pointer;
+}
+
+/* GESTURE STATUS */
+
+.gesture-status {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 9px;
+    margin-top: 28px;
+    color: var(--muted);
+    font-size: 9px;
+    letter-spacing: 2px;
+}
+
+.status-indicator {
+    width: 7px;
+    height: 7px;
+    background: #777;
+    border-radius: 50%;
+}
+
+.gesture-status.active .status-indicator {
+    background: var(--green);
+    box-shadow: 0 0 10px var(--green);
+}
+
+.gesture-status.active {
+    color: var(--green);
+}
+
+/* WEBCAM PANEL */
+
+.camera-panel {
+    position: fixed;
+    bottom: 22px;
+    left: 22px;
+    width: 230px;
+    background: #171717;
+    border: 1px solid #393939;
+    border-radius: 14px;
+    padding: 10px;
+    z-index: 1000;
+    display: none;
+    box-shadow: 0 10px 35px rgba(0, 0, 0, 0.5);
+}
+
+.camera-panel.active {
+    display: block;
+}
+
+.camera-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 9px;
+    font-size: 9px;
+    letter-spacing: 2px;
+    color: var(--muted);
+}
+
+.camera-dot {
+    width: 7px;
+    height: 7px;
+    background: var(--green);
+    border-radius: 50%;
+}
+
+.camera-feed {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    background: #080808;
+    border-radius: 8px;
+}
+
+/* p5 canvas will fit inside camera panel */
+
+.camera-feed canvas {
+    display: block;
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.camera-placeholder {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    text-align: center;
+    background: #111;
+    z-index: 2;
+}
+
+.camera-placeholder span {
+    color: var(--accent);
+    font-size: 10px;
+    letter-spacing: 2px;
+}
+
+.camera-placeholder small {
+    color: var(--muted);
+    font-size: 9px;
+    padding: 0 10px;
+}
+
+.camera-placeholder.hidden {
+    display: none;
+}
+
+.camera-footer {
+    margin-top: 9px;
+    color: var(--muted);
+    font-size: 8px;
+    letter-spacing: 1.5px;
+    text-align: center;
+}
+
+/* FOOTER */
+
+footer {
+    margin-top: 25px;
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 600px) {
+    .player {
+        padding: 25px 15px;
+    }
+
+    .turntable {
+        transform: scale(0.85);
+        margin: 20px auto;
+    }
+
+    .camera-panel {
+        width: 165px;
+        bottom: 10px;
+        left: 10px;
+    }
+}
+
+@media (max-width: 380px) {
+    .camera-panel {
+        width: 130px;
+    }
+}
+
+/* GESTURE MODE TOGGLE BUTTON */
+
+.gesture-toggle {
+    margin-top: 15px;
+    padding: 11px 20px;
+    background: var(--surface);
+    color: var(--text);
+    border: 1px solid #555;
+    border-radius: 30px;
+    cursor: pointer;
+    font-size: 11px;
+    letter-spacing: 1px;
+    transition: 0.25s ease;
+}
+
+.gesture-toggle:hover {
+    background: #383838;
+}
+
+.gesture-toggle.active {
+    background: var(--accent);
+    color: #111;
+    border-color: var(--accent);
 }
